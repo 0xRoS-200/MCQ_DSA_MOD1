@@ -1,33 +1,394 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Structures & Algorithms Exam</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>DSA Final Exam</h1>
-      <div id="timer">45:00</div>
-    </header>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #334155;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+        }
 
-    <div class="container">
-      <div id="result-area" class="score-board">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+
+        /* --- Sticky Header & Timer --- */
+        header {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        #timer {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            background: #e0f2fe;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .timer-warning {
+            color: #dc2626 !important;
+            background: #fee2e2 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* --- Quiz Container --- */
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        label:hover {
+            border-color: var(--primary-color);
+            background: #eff6ff;
+        }
+
+        input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+        }
+
+        /* --- Results Styling --- */
+        .correct-answer {
+            background-color: #dcfce7 !important;
+            border-color: var(--success-color) !important;
+            color: #14532d;
+        }
+
+        .wrong-answer {
+            background-color: #fee2e2 !important;
+            border-color: var(--error-color) !important;
+            color: #7f1d1d;
+        }
+
+        .score-board {
+            display: none; /* Hidden initially */
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .score-big {
+            font-size: 3rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        /* --- Footer/Submit --- */
+        .submit-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>DSA Final Exam</h1>
+    <div id="timer">45:00</div>
+</header>
+
+<div class="container">
+    <div id="result-area" class="score-board">
         <h2>Exam Completed!</h2>
         <span class="score-big" id="score-display">0 / 50</span>
         <p id="percentage-display">0%</p>
-        <p style="margin-top: 10px; opacity: 0.9">Review your answers below.</p>
-      </div>
-
-      <form id="quiz-form">
-        <div id="questions-container"></div>
-
-        <div class="submit-section">
-          <button type="submit" id="submit-btn">Submit Exam</button>
-        </div>
-      </form>
+        <p style="margin-top:10px; opacity:0.9">Review your answers below.</p>
     </div>
-    <script src="script.js"></script>
-  </body>
+
+    <form id="quiz-form">
+        <div id="questions-container"></div>
+        
+        <div class="submit-section">
+            <button type="submit" id="submit-btn">Submit Exam</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // --- Configuration ---
+    const TIME_LIMIT_MINUTES = 45;
+    
+    // --- Data Source (Parsed from your provided text) ---
+    // Mapping: A=0, B=1, C=2, D=3
+    const quizData = [
+        // Section A
+        { q: "1. Data Structure is defined as organizing data elements in which way?", options: ["Only Logical", "Only Mathematical", "Mathematical and Logical", "Randomly"], ans: 2 },
+        { q: "2. Which of the following is an advantage of Data Structures?", options: ["Increases complexity", "Data Abstraction and Reusability", "Increases memory usage", "Slows down data retrieval"], ans: 1 },
+        { q: "3. What does ADT stand for?", options: ["Algorithm Data Type", "Abstract Data Type", "Active Data Type", "Array Data Type"], ans: 1 },
+        { q: "4. The main characteristic of an Abstract Data Type (ADT) is that it:", options: ["Exposes the implementation details", "Hides the implementation details but defines operations", "Does not specify operations", "Uses only primitive data types"], ans: 1 },
+        { q: "5. Which of the following is NOT a characteristic of an Algorithm?", options: ["Finiteness", "Definiteness", "Ambiguity", "Effectiveness"], ans: 2 },
+        { q: "6. Which of the following is a Primitive Data Structure?", options: ["Stack", "Array", "Integer", "Graph"], ans: 2 },
+        { q: "7. Which of the following is a Non-Primitive Data Structure?", options: ["Float", "Boolean", "Character", "Linked List"], ans: 3 },
+        { q: "8. In Primitive Data Structures, the size is:", options: ["Fixed", "Not Fixed", "Dynamic", "Infinite"], ans: 0 },
+        { q: "9. Non-Primitive Data Structures can accept which value that Primitive ones cannot?", options: ["Zero", "Negative numbers", "Null value", "Positive numbers"], ans: 2 },
+        { q: "10. What type of relationship does a Linear Data Structure represent?", options: ["Hierarchical", "Sequential (Adjacency)", "Random", "Multi-level"], ans: 1 },
+
+        // Section B
+        { q: "11. Time Complexity is defined as:", options: ["The length of the code", "The time consumed by the program to run till completion", "The time taken to compile the code", "The speed of the processor"], ans: 1 },
+        { q: "12. Space Complexity helps in analyzing:", options: ["The amount of hard disk used", "The amount of memory (RAM) required by the algorithm", "The number of lines in the code", "The compilation time"], ans: 1 },
+        { q: "13. Which notation represents the (Worst Case) of an algorithm's running time?", options: ["Big Omega (Ω)", "Big Oh (O)", "Theta (Θ)", "Beta (β)"], ans: 1 },
+        { q: "14. Which notation represents the (Best Case) of an algorithm's running time?", options: ["Big Omega (Ω)", "Big Oh (O)", "Theta (Θ)", "Alpha (α)"], ans: 0 },
+        { q: "15. Which notation represents the Average Case of an algorithm?", options: ["Big Oh (O)", "Big Omega (Ω)", "Theta (Θ)", "Gamma (γ)"], ans: 2 },
+        { q: "16. The time complexity of a simple loop that runs from i=1 to n is:", options: ["O(1)", "O(n)", "O(n^2)", "O(log n)"], ans: 1 },
+        { q: "17. If an algorithm takes the maximum amount of time to execute, it is called the:", options: ["Best Case", "Average Case", "Worst Case", "Null Case"], ans: 2 },
+        { q: "18. For the condition f(n) ≤ c⋅g(n) for all n≥n0, which notation is used?", options: ["Big Oh (O)", "Big Omega (Ω)", "Theta (Θ)", "None"], ans: 0 },
+        { q: "19. What is the time complexity of the matrix printing code containing nested loops (loops inside loops) for size m×n?", options: ["O(n)", "O(m+n)", "O(mn)", "O(1)"], ans: 2 },
+        { q: "20. An algorithm must terminate after a finite number of steps. This property is known as:", options: ["Definiteness", "Finiteness", "Effectiveness", "Scalability"], ans: 1 },
+
+        // Section C
+        { q: "21. An Array is best described as:", options: ["A heterogeneous collection of elements", "A homogeneous collection of elements stored sequentially", "A dynamic list of elements", "A collection of elements with no index"], ans: 1 },
+        { q: "22. In an array int a, the index usually starts from:", options: ["1", "-1", "0", "10"], ans: 2 },
+        { q: "23. Which of the following is the correct syntax to declare an array?", options: ["datatype array_name[size];", "array_name datatype[size];", "size array_name;", "[size] datatype array_name;"], ans: 0 },
+        { q: "24. How are elements in a 1D array stored in memory?", options: ["Randomly", "Contiguous memory allocation", "Linked via pointers", "In a binary tree format"], ans: 1 },
+        { q: "25. A 2D array stores data in the form of:", options: ["Nodes and Pointers", "Rows and Columns", "Stacks and Queues", "Keys and Values"], ans: 1 },
+        { q: "26. The two ways to store a 2D array in memory are:", options: ["Linear and Non-linear", "Row Major Order and Column Major Order", "Static and Dynamic", "FIFO and LIFO"], ans: 1 },
+        { q: "27. What is the syntax for initializing an array with values 1, 2, 3, 4?", options: ["int a[] = (1, 2, 3, 4);", "int a[] = {1, 2, 3, 4};", "int a =;", "array a = {1, 2, 3, 4};"], ans: 1 },
+        { q: "28. Which operation is NOT typically associated with an Array?", options: ["Traversal", "Insertion", "Pushing (without an index)", "Merging"], ans: 2 },
+        { q: "29. Which data structure represents the adjacency relationship between elements?", options: ["Non-Linear", "Linear", "Primitive", "Atomic"], ans: 1 },
+        { q: "30. In a Linked List (compared to an Array), the collection of elements is:", options: ["Static", "Dynamic", "Fixed size", "Continuous only"], ans: 1 },
+
+        // Section D
+        { q: "31. A Stack follows which principle?", options: ["FIFO (First In First Out)", "LIFO (Last In First Out)", "Random Access", "Sorted Order"], ans: 1 },
+        { q: "32. A Queue follows which principle?", options: ["FIFO (First In First Out)", "LIFO (Last In First Out)", "LILO (Last In Last Out)", "Priority Access only"], ans: 0 },
+        { q: "33. The operation of adding an element to a Stack is called:", options: ["Pop", "Enqueue", "Push", "Peak"], ans: 2 },
+        { q: "34. The operation of removing an element from a Stack is called:", options: ["Pop", "Dequeue", "Push", "Poll"], ans: 0 },
+        { q: "35. In a Stack, if top == max - 1, the stack status is:", options: ["Empty", "Underflow", "Overflow (Full)", "Initialized"], ans: 2 },
+        { q: "36. In a Stack, if top == -1, the stack status is:", options: ["Overflow", "Underflow (Empty)", "Full", "Garbage Value"], ans: 1 },
+        { q: "37. Which pointer is used to track the position in a Stack?", options: ["Front", "Rear", "Top", "Head"], ans: 2 },
+        { q: "38. Which data structure is used for Expression Evaluation (Infix to Postfix)?", options: ["Queue", "Array", "Stack", "Graph"], ans: 2 },
+        { q: "39. Queues have two pointers/ends called:", options: ["Top and Bottom", "Front and Rear", "Start and Stop", "Left and Right"], ans: 1 },
+        { q: "40. In a Queue, insertion takes place at the ______ and deletion takes place at the ______ .", options: ["Front, Rear", "Rear, Front", "Top, Bottom", "Rear, Rear"], ans: 1 },
+
+        // Section E
+        { q: "41. Which of the following is a Non-Linear Data Structure?", options: ["Array", "Stack", "Tree", "Queue"], ans: 2 },
+        { q: "42. A Tree is a hierarchical structure where each node contains:", options: ["Only a value", "A value and zero or more child nodes", "A key and a value pair", "Continuous memory blocks"], ans: 1 },
+        { q: "43. A Graph is a collection of:", options: ["Roots and Leaves", "Vertices and Edges", "Rows and Columns", "Tops and Bottoms"], ans: 1 },
+        { q: "44. Which Data Structure uses Key-Value pairs for efficient lookup?", options: ["Stack", "Hash Table", "Queue", "Linked List"], ans: 1 },
+        { q: "45. Which of the following is an application of Recursion mentioned in the notes?", options: ["Sorting an Array", "Tower of Hanoi", "Database Management", "Web Search"], ans: 1 },
+        { q: "46. Which data structure is suitable for 'Key-based' problems (e.g., Dictionary)?", options: ["Stack", "Queue", "Hash Table", "Array"], ans: 2 },
+        { q: "47. Primitive data types are manipulated directly by:", options: ["The Compiler", "Machine Instructions", "High-level functions", "The User"], ans: 1 },
+        { q: "48. In Algorithm analysis, the 'Input' characteristic means:", options: ["The algorithm produces at least one output", "The algorithm takes zero or more inputs", "The algorithm runs infinitely", "The algorithm must be ambiguous"], ans: 1 },
+        { q: "49. 'Efficiency' in algorithms primarily refers to minimizing:", options: ["Code length", "Variable names", "Time and Space resources", "User interaction"], ans: 2 },
+        { q: "50. Which Data Structure allows memory to be allocated dynamically (nodes connected via pointers)?", options: ["Array", "Primitive Integer", "Linked List", "Stack (Static implementation)"], ans: 2 }
+    ];
+
+    // --- Core Logic ---
+    const container = document.getElementById('questions-container');
+    const timerDisplay = document.getElementById('timer');
+    const form = document.getElementById('quiz-form');
+    let timerInterval;
+
+    // 1. Render Quiz
+    function renderQuiz() {
+        quizData.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `q-card-${index}`;
+
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.textContent = item.q;
+            card.appendChild(qText);
+
+            const grid = document.createElement('div');
+            grid.className = 'options-grid';
+
+            item.options.forEach((opt, optIndex) => {
+                const label = document.createElement('label');
+                label.id = `label-${index}-${optIndex}`;
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `question-${index}`;
+                input.value = optIndex;
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(opt));
+                grid.appendChild(label);
+            });
+
+            card.appendChild(grid);
+            container.appendChild(card);
+        });
+    }
+
+    // 2. Timer Logic
+    function startTimer(durationMinutes) {
+        let time = durationMinutes * 60;
+        
+        timerInterval = setInterval(() => {
+            const minutes = Math.floor(time / 60);
+            const seconds = time % 60;
+
+            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            if (time <= 300) { // Warning at 5 mins
+                timerDisplay.classList.add('timer-warning');
+            }
+
+            if (time <= 0) {
+                clearInterval(timerInterval);
+                finishQuiz(true); // Force finish
+            }
+            time--;
+        }, 1000);
+    }
+
+    // 3. Scoring Logic
+    function finishQuiz(isTimeout = false) {
+        clearInterval(timerInterval);
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = isTimeout ? "Time's Up! Submitting..." : "Submitted";
+
+        let score = 0;
+        const total = quizData.length;
+
+        quizData.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+            const card = document.getElementById(`q-card-${index}`);
+            const correctIndex = item.ans;
+            
+            // Highlight Correct Answer visually
+            const correctLabel = document.getElementById(`label-${index}-${correctIndex}`);
+            correctLabel.classList.add('correct-answer');
+
+            if (selected) {
+                const userVal = parseInt(selected.value);
+                if (userVal === correctIndex) {
+                    score++;
+                    // Optional: add checkmark icon
+                } else {
+                    // Highlight Wrong Answer
+                    const wrongLabel = document.getElementById(`label-${index}-${userVal}`);
+                    wrongLabel.classList.add('wrong-answer');
+                }
+            } else {
+                // Unanswered - visually mark as missed (optional, sticking to minimal)
+                card.style.borderLeft = "5px solid #fbbf24"; // Yellow border for skipped
+            }
+        });
+
+        // Show Results
+        const resultArea = document.getElementById('result-area');
+        document.getElementById('score-display').textContent = `${score} / ${total}`;
+        document.getElementById('percentage-display').textContent = `${Math.round((score/total)*100)}%`;
+        resultArea.style.display = 'block';
+
+        // Scroll to top to see score
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Event Listeners
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if(confirm("Are you sure you want to submit?")) {
+            finishQuiz();
+        }
+    });
+
+    // Initialize
+    renderQuiz();
+    startTimer(TIME_LIMIT_MINUTES);
+
+</script>
+
+</body>
 </html>
