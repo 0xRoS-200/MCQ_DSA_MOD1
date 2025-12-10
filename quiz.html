@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Structures & Algorithms Exam</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>DSA Final Exam</h1>
+      <div id="timer">45:00</div>
+    </header>
+
+    <div class="container">
+      <div id="result-area" class="score-board">
+        <h2>Exam Completed!</h2>
+        <span class="score-big" id="score-display">0 / 50</span>
+        <p id="percentage-display">0%</p>
+        <p style="margin-top: 10px; opacity: 0.9">Review your answers below.</p>
+      </div>
+
+      <form id="quiz-form">
+        <div id="questions-container"></div>
+
+        <div class="submit-section">
+          <button type="submit" id="submit-btn">Submit Exam</button>
+        </div>
+      </form>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
